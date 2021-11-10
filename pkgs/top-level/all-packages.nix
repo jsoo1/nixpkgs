@@ -15928,6 +15928,8 @@ with pkgs;
 
   ctpl = callPackage ../development/libraries/ctpl { };
 
+  cppe = callPackage ../development/libraries/science/chemistry/cppe { };
+
   cppdb = callPackage ../development/libraries/cppdb { };
 
   cpp-utilities = callPackage ../development/libraries/cpp-utilities { };
