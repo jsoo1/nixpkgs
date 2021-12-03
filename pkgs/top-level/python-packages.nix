@@ -9928,6 +9928,8 @@ in {
 
   Wand = callPackage ../development/python-modules/Wand { };
 
+  wandb = callPackage ../development/python-modules/wandb { };
+
   warlock = callPackage ../development/python-modules/warlock { };
 
   warrant = callPackage ../development/python-modules/warrant { };
