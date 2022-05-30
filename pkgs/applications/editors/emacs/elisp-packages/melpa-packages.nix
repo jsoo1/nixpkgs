@@ -549,6 +549,22 @@ let
           '';
         });
 
+        transient = super.transient.overrideAttrs (attrs : {
+          buildInputs = (attrs.buildInputs or []) ++ (with pkgs; [gnumake texinfo texi2html texi2mdoc texlive.combined.scheme-medium]);
+          preBuild = (attrs.preBuild or "") + ''
+            make all
+            mv lisp/* ./
+          '';
+        });
+
+        with-editor = super.with-editor.overrideAttrs (attrs : {
+          buildInputs = (attrs.buildInputs or []) ++ (with pkgs; [gnumake texinfo texi2html texi2mdoc texlive.combined.scheme-medium]);
+          preBuild = (attrs.preBuild or "") + ''
+            make all
+            mv lisp/* ./
+          '';
+        });
+
         vdiff-magit = super.vdiff-magit.overrideAttrs (attrs: {
           nativeBuildInputs =
             (attrs.nativeBuildInputs or [ ]) ++ [ pkgs.git ];
