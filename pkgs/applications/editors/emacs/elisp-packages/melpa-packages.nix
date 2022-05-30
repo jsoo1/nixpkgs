@@ -570,10 +570,19 @@ let
           '';
         });
 
-        units-mode = super.units-mode.overrideAttrs (attrs: {
-          postPatch = attrs.postPatch or "" + ''
-            substituteInPlace units-mode.el \
-              --replace-fail 'units-binary-path "units"' 'units-binary-path "${lib.getExe pkgs.units}"'
+        transient = super.transient.overrideAttrs (attrs : {
+          buildInputs = (attrs.buildInputs or []) ++ (with pkgs; [gnumake texinfo texi2html texi2mdoc texlive.combined.scheme-medium]);
+          preBuild = (attrs.preBuild or "") + ''
+            make all
+            mv lisp/* ./
+          '';
+        });
+
+        with-editor = super.with-editor.overrideAttrs (attrs : {
+          buildInputs = (attrs.buildInputs or []) ++ (with pkgs; [gnumake texinfo texi2html texi2mdoc texlive.combined.scheme-medium]);
+          preBuild = (attrs.preBuild or "") + ''
+            make all
+            mv lisp/* ./
           '';
         });
 
