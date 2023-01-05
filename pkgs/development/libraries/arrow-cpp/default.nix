@@ -67,6 +67,17 @@ let
     hash = "sha256-cO5t/mgsbBhbSefx8EMGTyxmgTjhZ8mFujkFQ3p/JS0=";
   };
 
+  aws-sdk-cpp-arrow = aws-sdk-cpp.override {
+    apis = [
+      "cognito-identity"
+      "config"
+      "identity-management"
+      "s3"
+      "sts"
+      "transfer"
+    ];
+  };
+
 in
 stdenv.mkDerivation rec {
   pname = "arrow-cpp";
@@ -154,7 +165,7 @@ stdenv.mkDerivation rec {
     grpc
     openssl
     protobuf
-  ] ++ lib.optionals enableS3 [ aws-sdk-cpp openssl ]
+  ] ++ lib.optionals enableS3 [ aws-sdk-cpp-arrow openssl ]
   ++ lib.optionals enableGcs [
     abseil-cpp
     crc32c
@@ -217,7 +228,7 @@ stdenv.mkDerivation rec {
     "-DCMAKE_SKIP_BUILD_RPATH=OFF" # needed for tests
     "-DCMAKE_INSTALL_RPATH=@loader_path/../lib" # needed for tools executables
   ] ++ lib.optional (!stdenv.isx86_64) "-DARROW_USE_SIMD=OFF"
-  ++ lib.optional enableS3 "-DAWSSDK_CORE_HEADER_FILE=${aws-sdk-cpp}/include/aws/core/Aws.h"
+  ++ lib.optional enableS3 "-DAWSSDK_CORE_HEADER_FILE=${aws-sdk-cpp-arrow}/include/aws/core/Aws.h"
   ++ lib.optionals enableGcs [ "-DCMAKE_CXX_STANDARD=${grpc.cxxStandard}" ];
 
   doInstallCheck = true;
