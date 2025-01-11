@@ -18,7 +18,6 @@
   boehmgc,
   libGLU,
   libGL,
-  libglvnd,
   ncurses,
   readline,
   gsl,
@@ -26,7 +25,7 @@
   python3,
   qtbase,
   qtsvg,
-  boost186,
+  boost,
   zlib,
   perl,
   curl,
@@ -36,7 +35,7 @@
 }:
 
 stdenv.mkDerivation (finalAttrs: {
-  version = "2.95";
+  version = "2.92";
   pname = "asymptote";
 
   outputs = [
@@ -49,14 +48,8 @@ stdenv.mkDerivation (finalAttrs: {
 
   src = fetchurl {
     url = "mirror://sourceforge/asymptote/${finalAttrs.version}/asymptote-${finalAttrs.version}.src.tgz";
-    hash = "sha256-FWBP0Cy23bxbgHUp0ub8YXyCWhhN0Ne3E5DFZ66seOc=";
+    hash = "sha256-nZtcb6fg+848HlT+sl4tUdKMT+d5jyTHbNyugpGo6mY=";
   };
-
-  # https://github.com/vectorgraphics/asymptote/issues/513
-  postConfigure = ''
-    substituteInPlace Makefile \
-      --replace-fail 'glew.o -lGLX' 'glew.o'
-  '';
 
   # override with TeX Live containers to avoid building sty, docs from source
   texContainer = null;
@@ -71,17 +64,7 @@ stdenv.mkDerivation (finalAttrs: {
       texinfo
       wrapQtAppsHook
       cmake
-      ghostscriptX
-      perl
       pkg-config
-      (python3.withPackages (
-        ps: with ps; [
-          click
-          cson
-          numpy
-          pyqt5
-        ]
-      ))
     ]
     ++ lib.optional (finalAttrs.texContainer == null || finalAttrs.texdocContainer == null) (
       texliveSmall.withPackages (
@@ -111,9 +94,7 @@ stdenv.mkDerivation (finalAttrs: {
     curl
     qtbase
     qtsvg
-    # relies on removed asio::io_service
-    # https://github.com/kuafuwang/LspCpp/issues/52
-    boost186
+    boost
     (python3.withPackages (
       ps: with ps; [
         cson
@@ -131,7 +112,6 @@ stdenv.mkDerivation (finalAttrs: {
       libglut
       libGLU
       libGL
-      libglvnd
     ]
     ++ lib.optionals stdenv.hostPlatform.isDarwin (
       with darwin.apple_sdk.frameworks;
@@ -175,7 +155,6 @@ stdenv.mkDerivation (finalAttrs: {
 
   postInstall = ''
     rm "$out"/bin/xasy
-    chmod +x "$out"/share/asymptote/GUI/xasy.py
     makeQtWrapper "$out"/share/asymptote/GUI/xasy.py "$out"/bin/xasy --prefix PATH : "$out"/bin
 
     if [[ -z $texdocContainer ]] ; then
@@ -220,7 +199,6 @@ stdenv.mkDerivation (finalAttrs: {
 
   meta = with lib; {
     description = "Tool for programming graphics intended to replace Metapost";
-    homepage = "https://asymptote.sourceforge.io/";
     license = licenses.gpl3Plus;
     maintainers = [ maintainers.raskin ];
     platforms = platforms.linux ++ platforms.darwin;
