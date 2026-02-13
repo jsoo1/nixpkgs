@@ -14,10 +14,8 @@ stdenv.mkDerivation (finalAttrs: {
 
   outputs = [
     "out"
-    "dev"
-  ] ++ lib.optionals stdenv.hostPlatform.isLinux [
-    # Workaround for cycle lib->out on darwin
     "lib"
+    "dev"
   ];
 
   src = fetchFromGitHub {
